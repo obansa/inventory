@@ -3,6 +3,7 @@ import {
   Barcode,
   Boxes,
   CalendarClock,
+  HardDrive,
   Keyboard,
   PackageOpen,
   QrCode,
@@ -39,7 +40,7 @@ function isToday(iso: string): boolean {
 }
 
 export function InventoryPage() {
-  const { items, removeItem, clearAll } = useInventory();
+  const { items, removeItem, clearAll, saveFailed } = useInventory();
   const [query, setQuery] = useState('');
   const [product, setProduct] = useState('');
   const [confirmClear, setConfirmClear] = useState(false);
@@ -192,7 +193,14 @@ export function InventoryPage() {
               </tbody>
             </table>
             <div className="table-foot muted small">
-              Showing {rows.length} of {items.length} item{items.length === 1 ? '' : 's'}
+              <span>
+                Showing {rows.length} of {items.length} item{items.length === 1 ? '' : 's'}
+              </span>
+              {!saveFailed && (
+                <span className="saved-note">
+                  <HardDrive size={13} /> Saved on this device
+                </span>
+              )}
             </div>
           </div>
         )}

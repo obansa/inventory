@@ -16,14 +16,6 @@ import type { ScanConfig, ScanMethod } from '../lib/inventory';
 import { navigate } from '../lib/router';
 import { useInventory } from '../lib/store';
 
-interface ScanEvent {
-  id: number;
-  at: Date;
-  method: ScanMethod;
-  added: string[];
-  duplicates: string[];
-}
-
 export function ScanPage() {
   const { scanConfig, setScanConfig } = useInventory();
   const [editing, setEditing] = useState(false);
@@ -46,12 +38,10 @@ export function ScanPage() {
   return <ScannerView config={scanConfig} onEdit={() => setEditing(true)} />;
 }
 
-let nextEventId = 1;
-
 function ScannerView({ config, onEdit }: { config: ScanConfig; onEdit: () => void }) {
-  const { addScan, items } = useInventory();
+  // The scan history comes from the store, so it survives a page refresh.
+  const { addScan, items, scanLog: events } = useInventory();
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
-  const [events, setEvents] = useState<ScanEvent[]>([]);
   const [flash, setFlash] = useState<{ kind: 'success' | 'duplicate'; key: number } | null>(null);
   const [manual, setManual] = useState('');
   const flashTimer = useRef<number>();
@@ -64,19 +54,10 @@ function ScannerView({ config, onEdit }: { config: ScanConfig; onEdit: () => voi
 
   const record = useCallback(
     (raw: string, method: ScanMethod) => {
-      const result = addScan(raw, method);
-      if (!result.added.length && !result.duplicates.length) return false;
+      const { event, added } = addScan(raw, method);
+      if (!event) return false;
 
-      const event: ScanEvent = {
-        id: nextEventId++,
-        at: new Date(),
-        method,
-        added: result.added.map((i) => i.serial),
-        duplicates: result.duplicates,
-      };
-      setEvents((prev) => [event, ...prev].slice(0, 50));
-
-      const kind = result.added.length ? 'success' : 'duplicate';
+      const kind = added.length ? 'success' : 'duplicate';
       if (kind === 'success') successFeedback();
       else duplicateFeedback();
       setFlash({ kind, key: event.id });
@@ -219,7 +200,7 @@ function ScannerView({ config, onEdit }: { config: ScanConfig; onEdit: () => voi
                         {dup ? 'Duplicate' : 'Added'}
                       </span>
                       <time className="muted small">
-                        {e.at.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                        {new Date(e.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                       </time>
                     </li>
                   )),

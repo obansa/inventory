@@ -34,7 +34,21 @@ and press Enter) in the box beside the camera.
 
 The logic lives in `src/lib/inventory.ts` and is covered by `src/lib/inventory.test.ts`.
 
-Data is stored in the browser's `localStorage`, so it stays on the device the app is used on.
+## Saving data
+
+Everything is saved in the browser (`localStorage`) the moment it changes, so a page refresh,
+closing the tab or restarting the phone loses nothing:
+
+- the item list,
+- the current scan options (the app reopens straight into the scanner),
+- the scanner's recent-scans list and its added/duplicate counters (these reset when new scan
+  options are chosen; the items are kept).
+
+Several tabs can be open at once: they stay in sync, so one tab never overwrites what another
+added. The app asks the browser to keep its storage permanently, and shows a warning bar if the
+browser refuses to save (storage full or some private-browsing modes).
+
+Data stays on the device and browser it was recorded in. Export to Excel/CSV to move or back it up.
 
 ## Development
 
