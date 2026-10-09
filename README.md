@@ -22,9 +22,10 @@ and press Enter) in the box beside the camera.
 
 ## Scan processing rules
 
-- The scanned text is split on whitespace. If a code contains spaces or line breaks
-  (`xxxx xxxx xxx`, or one code per line), **each part is recorded as a separate item** with the
-  configured product name.
+- The scanned text is split on spaces, commas and line breaks. If a code contains several values
+  (`xxxx xxxx xxx`, `xxxx,xxxx,xxx`, `xxxx, xxxx`, or one code per line), **each part is recorded
+  as a separate item** with the configured product name. Empty parts (e.g. `a,,b` or a trailing
+  comma) are ignored.
 - **Duplicates are never recorded.** A serial number that is already in the list — or appears
   twice in the same scan — is skipped and shown as "Duplicate" (amber flash + low beep).
   New items get a green flash + high beep.

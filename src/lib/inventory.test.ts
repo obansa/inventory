@@ -20,8 +20,16 @@ describe('parseScan', () => {
     expect(parseScan('\nxxxx\r\nXxx\n\tXxy\n')).toEqual(['xxxx', 'Xxx', 'Xxy']);
   });
 
+  it('splits comma-separated codes, with or without spaces', () => {
+    expect(parseScan('A1,A2, A3 ,A4')).toEqual(['A1', 'A2', 'A3', 'A4']);
+  });
+
+  it('splits a mix of commas, spaces and new lines and ignores empty parts', () => {
+    expect(parseScan(',A1,,A2 A3\nA4,\n')).toEqual(['A1', 'A2', 'A3', 'A4']);
+  });
+
   it('returns nothing for blank input', () => {
-    expect(parseScan('  \n\t ')).toEqual([]);
+    expect(parseScan('  \n\t , ,')).toEqual([]);
   });
 });
 
@@ -45,7 +53,7 @@ describe('mergeScan', () => {
   });
 
   it('skips codes repeated within the same scan', () => {
-    const { added, duplicates } = mergeScan([], 'B1 B1\nB2 B1', 'Cable', 'qr', at);
+    const { added, duplicates } = mergeScan([], 'B1,B1\nB2, B1', 'Cable', 'qr', at);
     expect(added.map((i) => i.serial)).toEqual(['B1', 'B2']);
     expect(duplicates).toEqual(['B1', 'B1']);
   });

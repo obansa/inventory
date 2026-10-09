@@ -25,12 +25,13 @@ export interface MergeResult {
  * Splits a raw scan payload into individual codes.
  *
  * A single QR code may carry several serial numbers separated by spaces,
- * tabs or line breaks, e.g. "AB12 CD34 EF56" or "AB12\nCD34\nEF56".
+ * tabs, line breaks or commas, e.g. "AB12 CD34 EF56", "AB12\nCD34\nEF56"
+ * or "AB12, CD34,EF56".
  * Each non-empty token is treated as its own item.
  */
 export function parseScan(raw: string): string[] {
   return raw
-    .split(/\s+/)
+    .split(/[\s,]+/)
     .map((code) => code.trim())
     .filter((code) => code.length > 0);
 }

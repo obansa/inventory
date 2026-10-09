@@ -132,8 +132,8 @@ function ScannerView({ config, onEdit }: { config: ScanConfig; onEdit: () => voi
           </div>
           <div className="camera-card__footer">
             <p className="muted small">
-              Hold the {config.method === 'qr' ? 'QR code' : 'barcode'} inside the frame. Codes separated by spaces or
-              new lines are recorded as separate items.
+              Hold the {config.method === 'qr' ? 'QR code' : 'barcode'} inside the frame. Codes separated by spaces,
+              commas or new lines are recorded as separate items.
             </p>
             <button
               className="btn btn--ghost btn--icon"
@@ -187,7 +187,7 @@ function ScannerView({ config, onEdit }: { config: ScanConfig; onEdit: () => voi
               value={manual}
               onChange={(e) => setManual(e.target.value)}
               onKeyDown={onManualKey}
-              placeholder={'SN-1001 SN-1002\nSN-1003'}
+              placeholder={'SN-1001, SN-1002 SN-1003\nSN-1004'}
             />
             <div className="manual__row">
               <span className="muted small">Enter to add · Shift+Enter for a new line</span>
