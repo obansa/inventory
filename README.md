@@ -8,8 +8,14 @@ A web app for building a list of items to add to an inventory by scanning QR cod
 product name, plus how it was scanned and when. Includes search, a product filter, per-row
 delete and "clear all".
 
-**Export** the list as an **Excel workbook (.xlsx)** — bold frozen header row, real date cells —
-or as a **CSV file (.csv)** that opens in any spreadsheet app.
+**Export** the list as an **Excel workbook (.xlsx)** or a **CSV file (.csv)**. Both use the
+inventory import sheet layout:
+
+| Lot/Serial Number | Product | Created on | Activities |
+|---|---|---|---|
+| 02ff92854f53bfa7 | [P3-3W] Indoor Wi-Fi Camera | *(blank)* | *(blank)* |
+
+"Created on" and "Activities" are left blank on purpose.
 
 **Scan (`#/scan`)**
 1. Choose the **scan options**: the product name and the scan type (QR code or barcode).

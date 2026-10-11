@@ -18,30 +18,18 @@ function download(blob: Blob, name: string) {
 export async function exportItems(items: InventoryItem[], format: ExportFormat): Promise<void> {
   if (format === 'csv') {
     // The BOM makes Excel open the file as UTF-8 so non-ASCII product names display correctly.
-    download(new Blob(['﻿' + toCsv(items)], { type: 'text/csv;charset=utf-8' }), fileName('csv'));
+    download(new Blob(['\uFEFF' + toCsv(items)], { type: 'text/csv;charset=utf-8' }), fileName('csv'));
     return;
   }
 
   // Loaded on demand so the spreadsheet writer is not part of the main bundle.
   const { default: writeXlsxFile } = await import('write-excel-file/browser');
-  const header = EXPORT_HEADERS.map((value) => ({
-    value,
-    fontWeight: 'bold' as const,
-    color: '#ffffff',
-    backgroundColor: '#4f46e5',
-  }));
-  const rows = toExportRows(items).map((r) => [
-    { value: r.sn, type: Number },
-    { value: r.serial, type: String },
-    { value: r.productName, type: String },
-    { value: r.method, type: String },
-    // Excel dates have no time zone; shift so the sheet shows the same local time as the app.
-    { value: new Date(r.addedAt.getTime() - r.addedAt.getTimezoneOffset() * 60_000), type: Date, format: 'yyyy-mm-dd hh:mm' },
-  ]);
+  const header = EXPORT_HEADERS.map((value) => ({ value, fontWeight: 'bold' as const }));
+  const rows = toExportRows(items).map((row) => row.map((value) => ({ value, type: String })));
 
   await writeXlsxFile([header, ...rows], {
     sheet: 'Inventory',
     stickyRowsCount: 1,
-    columns: [{ width: 7 }, { width: 28 }, { width: 32 }, { width: 14 }, { width: 20 }],
+    columns: [{ width: 28 }, { width: 36 }, { width: 22 }, { width: 22 }],
   }).toFile(fileName('xlsx'));
 }

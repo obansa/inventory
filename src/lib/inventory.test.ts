@@ -67,10 +67,15 @@ describe('mergeScan', () => {
 });
 
 describe('toCsv', () => {
-  it('numbers rows and escapes special characters', () => {
+  it('uses the import sheet columns and leaves Created on and Activities blank', () => {
     const csv = toCsv([
+      { serial: '02ff92854f53bfa7', productName: '[P3-3W] Indoor Wi-Fi Camera', method: 'qr', addedAt: at.toISOString() },
       { serial: 'A1', productName: 'Desk, "Oak"', method: 'manual', addedAt: at.toISOString() },
     ]);
-    expect(csv.split('\n')[1]).toBe(`1,A1,"Desk, ""Oak""",Manual,${at.toISOString()}`);
+    expect(csv.split('\n')).toEqual([
+      'Lot/Serial Number,Product,Created on,Activities',
+      '02ff92854f53bfa7,[P3-3W] Indoor Wi-Fi Camera,,',
+      'A1,"Desk, ""Oak""",,',
+    ]);
   });
 });

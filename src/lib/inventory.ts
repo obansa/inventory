@@ -64,31 +64,15 @@ export function mergeScan(
   return { items: added.length ? [...existing, ...added] : existing, added, duplicates };
 }
 
-export const METHOD_LABELS: Record<ScanMethod, string> = {
-  qr: 'QR code',
-  barcode: 'Barcode',
-  manual: 'Manual',
-};
+/**
+ * Export columns, matching the inventory system's import sheet.
+ * "Created on" and "Activities" are intentionally left blank.
+ */
+export const EXPORT_HEADERS = ['Lot/Serial Number', 'Product', 'Created on', 'Activities'] as const;
 
-export const EXPORT_HEADERS = ['S/N', 'Serial Number', 'Product Name', 'Scan Method', 'Added At'] as const;
-
-export interface ExportRow {
-  sn: number;
-  serial: string;
-  productName: string;
-  method: string;
-  addedAt: Date;
-}
-
-/** One row per item, in the same order and numbering as the items table. */
-export function toExportRows(items: InventoryItem[]): ExportRow[] {
-  return items.map((item, i) => ({
-    sn: i + 1,
-    serial: item.serial,
-    productName: item.productName,
-    method: METHOD_LABELS[item.method],
-    addedAt: new Date(item.addedAt),
-  }));
+/** One row per item, in the same order as the items table. */
+export function toExportRows(items: InventoryItem[]): string[][] {
+  return items.map((item) => [item.serial, item.productName, '', '']);
 }
 
 function csvCell(value: string): string {
@@ -96,8 +80,5 @@ function csvCell(value: string): string {
 }
 
 export function toCsv(items: InventoryItem[]): string {
-  const rows = toExportRows(items).map((r) =>
-    [String(r.sn), r.serial, r.productName, r.method, r.addedAt.toISOString()].map(csvCell).join(','),
-  );
-  return [EXPORT_HEADERS.join(','), ...rows].join('\n');
+  return [[...EXPORT_HEADERS], ...toExportRows(items)].map((row) => row.map(csvCell).join(',')).join('\n');
 }
